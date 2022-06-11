@@ -2,11 +2,16 @@ from database import *
 import random
 from datetime import date
 
+def clearConsole():
+    for x in range(20):
+        print("\n")
+
 class Advisor:
   def updateOwnPassword():
     newPassword = input("Input new password: ")
     c.execute("UPDATE advisors SET password=:newPassword WHERE username=:usedUsername", {'newPassword': newPassword, 'usedUsername': returnUsedUsername()})
     conn.commit()
+    clearConsole()
     print("Password updated!")
 
   def registerNewMember():
@@ -34,17 +39,63 @@ class Advisor:
       else:
         with conn:
           c.execute("INSERT INTO members VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (firstName, lastName, streetName, houseNumber, zipCode, city, email, mobilePhone, date.today(), finalnum))
+          clearConsole()
+          print("Member added!")
     checksum()
 
   def modifyMember():
     c.execute("SELECT * FROM members")
     membersList = c.fetchall()
     x = 1
-    print(membersList[1])
     for member in membersList:
       print(f"{x}. {member}")
       x = x + 1
-    input("Select a number of a member that you want to modify: ")
+    selectedNumber = int(input("Select a number of a member that you want to modify: "))
+    print("""What values do you want to modify?
+1. Firstname
+2. Lastname
+3. Streetname
+4. Housenumber
+5. Zipcode
+6. City
+7. Email
+8. Phonenumber
+""")
+    inp = input("Enter choice: ")
+    if inp == '1':
+      inp = input("Enter new: ")
+      c.execute("UPDATE members SET firstName=:inp WHERE firstName=:firstName", {'inp': inp, 'firstName': membersList[selectedNumber - 1][0]})
+      conn.commit()
+      clearConsole()
+      print("Member modified!")
+    elif inp == '2':
+      inp = input("Enter new: ")
+      c.execute("UPDATE members SET lastName=:inp WHERE firstName=:firstName", {'inp': inp, 'firstName': membersList[selectedNumber - 1][0]})
+      conn.commit()
+    elif inp == '3':
+      inp = input("Enter new: ")
+      c.execute("UPDATE members SET streetName=:inp WHERE firstName=:firstName", {'inp': inp, 'firstName': membersList[selectedNumber - 1][0]})
+      conn.commit()
+    elif inp == '4':
+      inp = input("Enter new: ")
+      c.execute("UPDATE members SET houseNumber=:inp WHERE firstName=:firstName", {'inp': inp, 'firstName': membersList[selectedNumber - 1][0]})
+      conn.commit()
+    elif inp == '5':
+      inp = input("Enter new: ")
+      c.execute("UPDATE members SET zipCode=:inp WHERE firstName=:firstName", {'inp': inp, 'firstName': membersList[selectedNumber - 1][0]})
+      conn.commit()
+    elif inp == '6':
+      inp = input("Enter new: ")
+      c.execute("UPDATE members SET city=:inp WHERE firstName=:firstName", {'inp': inp, 'firstName': membersList[selectedNumber - 1][0]})
+      conn.commit()
+    elif inp == '7':
+      inp = input("Enter new: ")
+      c.execute("UPDATE members SET email=:inp WHERE firstName=:firstName", {'inp': inp, 'firstName': membersList[selectedNumber - 1][0]})
+      conn.commit()
+    elif inp == '8':
+      inp = input("Enter new: ")
+      c.execute("UPDATE members SET mobilePhone=:inp WHERE firstName=:firstName", {'inp': inp, 'firstName': membersList[selectedNumber - 1][0]})
+      conn.commit()
   
   def searchMember():
     inp = input("enter search: ")
@@ -55,25 +106,75 @@ class Advisor:
 {x[2]} {x[3]} {x[4]} {x[5]}
 {x[6]}
 {x[7]}""")
+    print("\n")
 
 class SystemAdmin(Advisor):
   def updateOwnPassword():
     newPassword = input("Input new password: ")
     c.execute("UPDATE sysadmins SET password=:newPassword WHERE username=:usedUsername", {'newPassword': newPassword, 'usedUsername': returnUsedUsername()})
     conn.commit()
+    clearConsole()
     print("Password updated!")
 
   def checkListOfUsersAndRoles():
     pass
 
   def registerNewAdvisor():
-    print("registreer nieuwe advisor")
-  
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    firstName = input("Enter firstname: ")
+    lastName = input("Enter lastName: ")
+    c.execute("INSERT INTO advisors VALUES (?, ?, ?, ?, ?)", (username, password, firstName, lastName, date.today()))
+    conn.commit()
+    print("Advisor added!")
+
   def modifyAdvisor():
-    print("modify advisor")
+    c.execute("SELECT * FROM advisors")
+    advisorsList = c.fetchall()
+    x = 1
+    for advisor in advisorsList:
+      print(f"{x}. {advisor}")
+      x = x + 1
+    selectedNumber = int(input("Select a number of a advisor that you want to modify: "))
+    print("""What values do you want to modify?
+1. Username
+2. Password
+3. Firstname
+4. Lastname
+""")
+    inp = input("Enter choice: ")
+    if inp == '1':
+      inp = input("Enter new: ")
+      c.execute("UPDATE advisors SET username=:inp WHERE username=:username", {'inp': inp, 'username': advisorsList[selectedNumber - 1][0]})
+      conn.commit()
+      print("Advisor updated!")
+    elif inp == '2':
+      inp = input("Enter new: ")
+      c.execute("UPDATE advisors SET password=:inp WHERE username=:username", {'inp': inp, 'username': advisorsList[selectedNumber - 1][0]})
+      conn.commit()
+      print("Advisor updated!")
+    elif inp == '3':
+      inp = input("Enter new: ")
+      c.execute("UPDATE advisors SET firstName=:inp WHERE username=:username", {'inp': inp, 'username': advisorsList[selectedNumber - 1][0]})
+      conn.commit()
+      print("Advisor updated!")
+    elif inp == '4':
+      inp = input("Enter new: ")
+      c.execute("UPDATE advisors SET lastName=:inp WHERE username=:username", {'inp': inp, 'username': advisorsList[selectedNumber - 1][0]})
+      conn.commit()
+      print("Advisor updated!")
 
   def deleteAdvisor():
-    print("delete advisor")
+    c.execute("SELECT * FROM advisors")
+    advisorsList = c.fetchall()
+    x = 1
+    for advisor in advisorsList:
+      print(f"{x}. {advisor}")
+      x = x + 1
+    selectedNumber = int(input("Select a number of a advisor that you want to delete: "))
+    c.execute("DELETE FROM advisors WHERE username=:selectedNumber", {'selectedNumber': advisorsList[selectedNumber - 1][0]})
+    conn.commit()
+    print("advisor deleted!")
 
   def resetAdvisorPassword():
     print("reset advisor password")
@@ -88,7 +189,16 @@ class SystemAdmin(Advisor):
     pass
 
   def deleteMember():
-    pass
+    c.execute("SELECT * FROM members")
+    membersList = c.fetchall()
+    x = 1
+    for member in membersList:
+      print(f"{x}. {member}")
+      x = x + 1
+    selectedNumber = int(input("Select a number of a member that you want to delete: "))
+    c.execute("DELETE FROM members WHERE firstName=:selectedNumber", {'selectedNumber': membersList[selectedNumber - 1][0]})
+    conn.commit()
+    print("Member deleted!")
 
 
 class SuperAdmin(SystemAdmin):

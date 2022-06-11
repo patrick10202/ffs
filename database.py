@@ -17,7 +17,7 @@ try:
                 city text,
                 email text,
                 mobilePhone text,
-                resignationDate text,
+                registrationDate text,
                 memberId text
                 )""")
 except:
@@ -26,7 +26,10 @@ except:
 try:
     c.execute("""CREATE TABLE advisors (
                 username text,
-                password text
+                password text,
+                firstName text,
+                lastName text,
+                registrationDate text
                 )""")
 except:
     pass
@@ -72,7 +75,7 @@ def superAdminLogin():
         print("Account not found")
 
 # c.execute("SELECT * FROM members")
-# c.execute("INSERT INTO sysadmins VALUES ('advisor1', 'adv')")
+# c.execute("INSERT INTO sysadmins VALUES ('admin', 'admin')")
 
 # print(c.fetchall())
 
